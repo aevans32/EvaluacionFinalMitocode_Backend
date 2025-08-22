@@ -1,4 +1,7 @@
 using EvaluacionFinalMitocode_backend.API.Filters;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
@@ -50,6 +53,13 @@ try
         });
     });
 
+    // TODO: Agregar ApplicationDbContext con SQL Server
+    // Registering Health Checks
+    builder.Services.AddHealthChecks()
+        .AddCheck("selfcheck", () => HealthCheckResult.Healthy()) // Si llega hasta aqui, la aplicacion esta funcionando bien.
+        //.AddDbContextCheck<ApplicationDbContext>(); // Esto verifica que la conexion a la BD es correcta y que la aplicacion puede acceder a ella. Como un ping.
+    ;
+
     /**
      * Para arriba estan los servicios!
      * Desde var app hacia abajo se le conoce como el 'pipeline' de la aplicacion.
@@ -72,6 +82,12 @@ try
     app.UseHttpsRedirection();
     app.UseAuthorization();
     app.MapControllers();
+
+    // Configurar HealthChecks
+    app.MapHealthChecks("/healthcheck", new()
+    {
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
     app.Run();
 }
