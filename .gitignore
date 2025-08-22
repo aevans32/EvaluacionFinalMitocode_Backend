@@ -1,0 +1,19 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+
+# Otros comunes
+*.cache
+*.log
+*.ide/
+*.ncrunch*
+TestResult*/
