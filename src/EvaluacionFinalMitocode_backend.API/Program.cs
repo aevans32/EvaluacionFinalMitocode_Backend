@@ -1,6 +1,9 @@
 using EvaluacionFinalMitocode_backend.API.Filters;
+using EvaluacionFinalMitocode_backend.Entities.Core;
+using EvaluacionFinalMitocode_backend.Persistence;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -53,11 +56,20 @@ try
         });
     });
 
+    // Configurarn Contexto de la BD
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection"));
+    });
+
+    // Configurar AppSettings para poder cargar la info de appsettings.json e inyectarla en los servicios con IOptions<AppSettings>
+    builder.Services.Configure<AppSettings>(builder.Configuration);
+
     // TODO: Agregar ApplicationDbContext con SQL Server
     // Registering Health Checks
     builder.Services.AddHealthChecks()
         .AddCheck("selfcheck", () => HealthCheckResult.Healthy()) // Si llega hasta aqui, la aplicacion esta funcionando bien.
-        //.AddDbContextCheck<ApplicationDbContext>(); // Esto verifica que la conexion a la BD es correcta y que la aplicacion puede acceder a ella. Como un ping.
+                                                                  //.AddDbContextCheck<ApplicationDbContext>(); // Esto verifica que la conexion a la BD es correcta y que la aplicacion puede acceder a ella. Como un ping.
     ;
 
     /**
@@ -91,7 +103,11 @@ try
 
     app.Run();
 }
-catch (Exception ex) 
+catch (Microsoft.Extensions.Hosting.HostAbortedException)
+{
+    logger.Warning("EF Tools spun up in Program.cs trying to resolve services during design time.");
+}
+catch (Exception ex)
 {
     logger.Fatal(ex, "Una excepcion fatal ocurrio al inicializar la API.");
     throw;
