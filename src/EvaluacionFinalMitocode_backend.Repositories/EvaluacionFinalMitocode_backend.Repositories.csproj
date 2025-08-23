@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EvaluacionFinalMitocode_backend.DTO\EvaluacionFinalMitocode_backend.DTO.csproj" />
+    <ProjectReference Include="..\EvaluacionFinalMitocode_backend.Entities\EvaluacionFinalMitocode_backend.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

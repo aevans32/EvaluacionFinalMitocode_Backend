@@ -33,11 +33,29 @@ namespace EvaluacionFinalMitocode_backend.Persistence.Configurations
 
             // Estado disponible y soft-delete (Active Status)
             builder.Property(x => x.ActiveStatus)
-                   .HasDefaultValue(true)
-                   .ValueGeneratedOnAdd();
+                   .HasDefaultValue(true);
+
+            // Estado de alquilado o disponible
+            builder.Property(x => x.Disponible)
+                   .HasDefaultValue(true);                   
 
             // Index de busquedas por titulo/autor
             builder.HasIndex(x => new { x.Titulo, x.Autor }).HasDatabaseName("IX_Libro_Titulo_Autor");
+
+            builder.HasIndex(x => x.ISBN)
+                    .HasDatabaseName("IX_Productos_Libros_ISBN");
+
+            // Fast “all copies of a title” lookups:
+            builder.HasIndex(x => x.Titulo)
+                   .HasDatabaseName("IX_Productos_Libros_Titulo");
+
+            builder.HasIndex(x => new { x.Titulo, x.Autor })
+                   .HasDatabaseName("IX_Productos_Libros_Titulo_Autor");
+
+            // (Optional) find “available copies” fast:
+            builder.HasIndex(x => new { x.Titulo, x.Disponible })
+                   .HasDatabaseName("IX_Productos_Libros_Titulo_Disponible")
+                   .HasFilter("[ActiveStatus] = 1"); // SQL Server filtered index
 
         }
     }
