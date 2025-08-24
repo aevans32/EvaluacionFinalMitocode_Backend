@@ -39,6 +39,23 @@ namespace EvaluacionFinalMitocode_backend.Persistence.Configurations
             builder.Property(x => x.Disponible)
                    .HasDefaultValue(true);                   
 
+            builder.Property(x => x.Description)
+                   .HasMaxLength(500);
+
+            builder.Property(x => x.ExtendedDescription)
+                   .HasMaxLength(2000);
+
+            builder.Property(x => x.UnitPrice)
+                     .HasPrecision(10, 2)   // Total 10 digitos, 2 decimales
+                     .HasDefaultValue(0m);
+
+            // Optional URL (public), keep ASCII and a practical max length
+            builder.Property(x => x.ImageUrl).HasMaxLength(500).IsUnicode(false);
+
+
+            // Indexes
+
+
             // Index de busquedas por titulo/autor
             builder.HasIndex(x => new { x.Titulo, x.Autor }).HasDatabaseName("IX_Libro_Titulo_Autor");
 
@@ -54,12 +71,25 @@ namespace EvaluacionFinalMitocode_backend.Persistence.Configurations
             builder.HasIndex(x => x.Autor)
                     .HasDatabaseName("IX_Productos_Libros_Autor");
 
-
             // Find “available copies” fast:
             builder.HasIndex(x => new { x.Titulo, x.Disponible })
                    .HasDatabaseName("IX_Productos_Libros_Titulo_Disponible")
                    .HasFilter("[ActiveStatus] = 1"); // SQL Server filtered index
 
+
+            // Constraints
+
+            // Enforce non negative pricing
+            builder.ToTable(tb => 
+            {
+                tb.HasCheckConstraint("CK_Productos_Libros_UnitPrice_NonNegative", "[UnitPrice] >= 0");
+            });
+
+            // ISBN digits only (no letters or special chars except hyphen)
+            builder.ToTable(tb =>
+            {
+                tb.HasCheckConstraint("CK_Productos_Libros_ISBN_DigitsOnly", "[ISBN] NOT LIKE '%[^0-9]%'");
+            });
         }
     }
 }
