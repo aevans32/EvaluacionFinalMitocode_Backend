@@ -1,7 +1,7 @@
 ﻿using EvaluacionFinalMitocode_backend.Entities.Core;
 using System.Linq.Expressions;
 
-namespace EvaluacionFinalMitocode_backend.Repositories.Interfaces
+namespace EvaluacionFinalMitocode_backend.Repositories.Base.Interface
 {
     /**
      * Estas interfaces genericas hacen uso de predicados

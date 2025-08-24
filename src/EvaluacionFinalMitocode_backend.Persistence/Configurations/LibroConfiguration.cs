@@ -25,7 +25,7 @@ namespace EvaluacionFinalMitocode_backend.Persistence.Configurations
             builder.Property(x => x.Titulo).IsRequired().HasMaxLength(200);
             builder.Property(x => x.Autor).IsRequired().HasMaxLength(100);
 
-            // ISBN: 13 caracteres, solo numeros y guiones, unico, no-unicode
+            // ISBN: 13 caracteres, solo numeros y guiones, no-unicode
             builder.Property(x => x.ISBN)
                    .IsRequired()
                    .HasMaxLength(13)
@@ -42,6 +42,7 @@ namespace EvaluacionFinalMitocode_backend.Persistence.Configurations
             // Index de busquedas por titulo/autor
             builder.HasIndex(x => new { x.Titulo, x.Autor }).HasDatabaseName("IX_Libro_Titulo_Autor");
 
+            // Index de busquedas por ISBN
             builder.HasIndex(x => x.ISBN)
                     .HasDatabaseName("IX_Productos_Libros_ISBN");
 
@@ -49,10 +50,12 @@ namespace EvaluacionFinalMitocode_backend.Persistence.Configurations
             builder.HasIndex(x => x.Titulo)
                    .HasDatabaseName("IX_Productos_Libros_Titulo");
 
-            builder.HasIndex(x => new { x.Titulo, x.Autor })
-                   .HasDatabaseName("IX_Productos_Libros_Titulo_Autor");
+            // Fast “all books by an author” lookups:
+            builder.HasIndex(x => x.Autor)
+                    .HasDatabaseName("IX_Productos_Libros_Autor");
 
-            // (Optional) find “available copies” fast:
+
+            // Find “available copies” fast:
             builder.HasIndex(x => new { x.Titulo, x.Disponible })
                    .HasDatabaseName("IX_Productos_Libros_Titulo_Disponible")
                    .HasFilter("[ActiveStatus] = 1"); // SQL Server filtered index

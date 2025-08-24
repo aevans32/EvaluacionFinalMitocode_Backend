@@ -1,9 +1,9 @@
 ﻿using EvaluacionFinalMitocode_backend.Entities.Core;
-using EvaluacionFinalMitocode_backend.Repositories.Interfaces;
+using EvaluacionFinalMitocode_backend.Repositories.Base.Interface;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace EvaluacionFinalMitocode_backend.Repositories.Implementations
+namespace EvaluacionFinalMitocode_backend.Repositories.Base.Implementation
 {
     public abstract class RepositoryBase<TEntity>(DbContext context) : IRepositoryBase<TEntity> where TEntity : EntityBase
     {
