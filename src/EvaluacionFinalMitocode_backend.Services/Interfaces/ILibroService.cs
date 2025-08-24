@@ -7,7 +7,7 @@ namespace EvaluacionFinalMitocode_backend.Services.Interfaces
     {
         Task<BaseResponseGeneric<List<LibroResponseDTO>>> SearchAsync(string? q, PaginationDTO pagination);
         Task<BaseResponseGeneric<LibroResponseDTO>> GetByIdAsync(string id);
-        Task<BaseResponseGeneric<LibroResponseDTO>> CreateAsync(LibroCreateRequestDTO request);
+        Task<BaseResponseGeneric<string>> CreateAsync(LibroCreateRequestDTO request);   // Retorna el Id del nuevo libro como string
         Task<BaseResponse> UpdateAsync(string id, LibroUpdateRequestDTO request);
         Task<BaseResponse> DeleteAsync(string id);        // soft delete (ActiveStatus = false)
         Task<BaseResponse> CheckoutAsync(string id);      // mark as rented (Disponible=false)
