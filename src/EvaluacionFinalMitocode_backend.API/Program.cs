@@ -1,6 +1,11 @@
 using EvaluacionFinalMitocode_backend.API.Filters;
 using EvaluacionFinalMitocode_backend.Entities.Core;
 using EvaluacionFinalMitocode_backend.Persistence;
+using EvaluacionFinalMitocode_backend.Repositories.Implementations;
+using EvaluacionFinalMitocode_backend.Repositories.Interfaces;
+using EvaluacionFinalMitocode_backend.Services.Implementations;
+using EvaluacionFinalMitocode_backend.Services.Interfaces;
+using EvaluacionFinalMitocode_backend.Services.Profiles;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
@@ -65,12 +70,30 @@ try
     // Configurar AppSettings para poder cargar la info de appsettings.json e inyectarla en los servicios con IOptions<AppSettings>
     builder.Services.Configure<AppSettings>(builder.Configuration);
 
+    // Repositories
+    builder.Services.AddScoped<ILibroRepository, LibroRepository>();
+
+    // Services
+    builder.Services.AddScoped<ILibroService, LibroService>();
+    builder.Services.AddScoped<IFileStorage, FileStorageLocal>();
+
     // TODO: Agregar ApplicationDbContext con SQL Server
     // Registering Health Checks
     builder.Services.AddHealthChecks()
         .AddCheck("selfcheck", () => HealthCheckResult.Healthy()) // Si llega hasta aqui, la aplicacion esta funcionando bien.
                                                                   //.AddDbContextCheck<ApplicationDbContext>(); // Esto verifica que la conexion a la BD es correcta y que la aplicacion puede acceder a ella. Como un ping.
-    ;
+        ;
+
+    // para la paginacion
+    builder.Services.AddHttpContextAccessor();
+
+    // Agregar AutoMapper
+    builder.Services.AddAutoMapper(config =>
+    {
+        config.AddProfile<LibroProfile>();
+        //config.AddProfile<GenreProfile>();
+        //config.AddProfile<SaleProfile>();
+    });
 
     /**
      * Para arriba estan los servicios!
@@ -90,8 +113,8 @@ try
         app.UseSwaggerUI();
     }
 
-
     app.UseHttpsRedirection();
+    app.UseStaticFiles(); // para servir archivos estaticos, como imagenes, css, js, etc. en servidor local.
     app.UseAuthorization();
     app.MapControllers();
 

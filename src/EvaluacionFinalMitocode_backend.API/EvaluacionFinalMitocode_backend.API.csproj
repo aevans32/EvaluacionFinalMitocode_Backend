@@ -26,6 +26,7 @@
     <ProjectReference Include="..\EvaluacionFinalMitocode_backend.Entities\EvaluacionFinalMitocode_backend.Entities.csproj" />
     <ProjectReference Include="..\EvaluacionFinalMitocode_backend.Persistence\EvaluacionFinalMitocode_backend.Persistence.csproj" />
     <ProjectReference Include="..\EvaluacionFinalMitocode_backend.Repositories\EvaluacionFinalMitocode_backend.Repositories.csproj" />
+    <ProjectReference Include="..\EvaluacionFinalMitocode_backend.Services\EvaluacionFinalMitocode_backend.Services.csproj" />
   </ItemGroup>
 
 </Project>
