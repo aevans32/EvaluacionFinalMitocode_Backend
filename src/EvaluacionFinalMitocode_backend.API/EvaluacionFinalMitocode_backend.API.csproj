@@ -29,4 +29,8 @@
     <ProjectReference Include="..\EvaluacionFinalMitocode_backend.Services\EvaluacionFinalMitocode_backend.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

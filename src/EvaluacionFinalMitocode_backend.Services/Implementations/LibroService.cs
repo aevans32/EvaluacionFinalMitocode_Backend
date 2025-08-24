@@ -14,6 +14,12 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
         IMapper mapper,
         IFileStorage fileStorage) : ILibroService
     {
+        private readonly ILibroRepository repository = repository;
+        private readonly ILogger<LibroService> logger = logger;
+        private readonly IMapper mapper = mapper;
+        private readonly IFileStorage fileStorage = fileStorage;
+        private readonly string container = "libros";
+
         public async Task<BaseResponseGeneric<List<LibroResponseDTO>>> SearchAsync(string? q, PaginationDTO pagination)
         {
             var response =  new BaseResponseGeneric<List<LibroResponseDTO>>();
@@ -48,19 +54,25 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             return response;
         }
 
-        public async Task<BaseResponseGeneric<string>> CreateAsync(LibroCreateRequestDTO request)
+        public async Task<BaseResponseGeneric<string>> CreateAsync(LibroRequestDTO request)
         {
             var response = new BaseResponseGeneric<string>();
             Libro entity = new();
             try
             {
                 entity = mapper.Map<Libro>(request);
-                // TODO: Necesitamos plementar la logica para almacenar la imagen
-                if (request is not null)
+                if (request.Image is not null)
                 {
-
+                    using (var memoryStream = new MemoryStream())
+                    { 
+                        await request.Image.CopyToAsync(memoryStream);
+                        var content = memoryStream.ToArray();                       // Extract the raw byte[] that we’ll pass to the storage service.
+                        var extension = Path.GetExtension(request.Image.FileName);  // Get the file extension from the original filename (e.g., ".jpg").
+                        entity.ImageUrl = await fileStorage.SaveFile(content, extension, container, request.Image.ContentType);
+                    }
                 }
-
+                response.Data = await repository.AddAsync(entity);
+                response.Success = true;
             }
             catch (Exception ex)
             {
@@ -70,9 +82,43 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             return response;
         }
 
-        public async Task<BaseResponse> UpdateAsync(string id, LibroUpdateRequestDTO request)
+        public async Task<BaseResponse> UpdateAsync(string id, LibroRequestDTO request)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponse();
+            try
+            {
+                var data = await repository.GetAsync(id);
+                if (data is null)
+                {
+                    response.ErrorMessage = "The record you are trying to update does not exist.";
+                    response.Success = false;
+                    return response;
+                }
+                mapper.Map(request, data);
+
+                if (request.Image is not null)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await request.Image.CopyToAsync(memoryStream);
+                        var content = memoryStream.ToArray();
+                        var extension = Path.GetExtension(request.Image.FileName);
+                        data.ImageUrl = await fileStorage.EditFile(content, extension, container, data.ImageUrl ?? string.Empty, request.Image.ContentType);
+                    }
+                }
+                else 
+                {
+                    data.ImageUrl = string.Empty;
+                }
+                await repository.UpdateAsync();
+                response.Success = true;
+            }
+            catch (Exception ex) 
+            {
+                response.ErrorMessage = "An error occurred while processing your request.";
+                logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
+            }
+            return response;
         }
 
         public async Task<BaseResponse> DeleteAsync(string id)
