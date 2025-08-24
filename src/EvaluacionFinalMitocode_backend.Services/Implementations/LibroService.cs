@@ -31,6 +31,7 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             }
             catch (Exception ex)
             {
+                response.Success = false;
                 response.ErrorMessage = "An error occurred while processing your request.";
                 logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
             }
@@ -48,6 +49,7 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             }
             catch (Exception ex) 
             {
+                response.Success = false;
                 response.ErrorMessage = "Ocurrio un error al obtener los datos";
                 logger.LogError(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
             }
@@ -76,6 +78,7 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             }
             catch (Exception ex)
             {
+                response.Success = false;
                 response.ErrorMessage = "An error occurred while processing your request.";
                 logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
             }
@@ -115,6 +118,7 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             }
             catch (Exception ex) 
             {
+                response.Success = false;
                 response.ErrorMessage = "An error occurred while processing your request.";
                 logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
             }
@@ -123,17 +127,73 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
 
         public async Task<BaseResponse> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponse();
+            try 
+            { 
+                var data = await repository.GetAsync(id);
+                if (data is null)
+                {
+                    response.ErrorMessage = "The record you are trying to delete does not exist.";
+                    response.Success = false;
+                    return response;
+                }
+                await fileStorage.DeleteFile(data.ImageUrl ?? string.Empty, container);
+                await repository.DeleteAsync(id);
+                response.Success = true;
+            }
+            catch (Exception ex) 
+            {
+                response.Success = false;
+                response.ErrorMessage = "An error occurred while processing your deletion request.";
+                logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
+            }
+            return response;
         }
 
         public async Task<BaseResponse> CheckinAsync(string id)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponse();
+            try
+            {
+                var ok = await repository.CheckinAsync(id);
+                if (!ok)
+                {
+                    response.ErrorMessage = "Book already available or not found.";
+                    response.Success = false;
+                    return response;
+                }
+                response.Success = true;
+            }
+            catch (Exception ex) 
+            {
+                response.Success = false;
+                response.ErrorMessage = "An error occurred while processing your checkin request.";
+                logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
+            }
+            return response;
         }
 
         public async Task<BaseResponse> CheckoutAsync(string id)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponse();
+            try
+            {
+                var ok = await repository.CheckoutAsync(id);
+                if (!ok)
+                {
+                    response.ErrorMessage = "Book not available or not found.";
+                    response.Success = false;
+                    return response;
+                }
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.ErrorMessage = "An error occurred while processing your checkout request.";
+                logger.LogError("{Error Message} {Message}:", response.ErrorMessage, ex.Message);
+            }
+            return response;
         }
     }
 }
