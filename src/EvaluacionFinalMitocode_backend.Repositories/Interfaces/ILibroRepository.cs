@@ -9,6 +9,7 @@ namespace EvaluacionFinalMitocode_backend.Repositories.Interfaces
     {
         Task<ICollection<Libro>> GetLibrosByAutorAsync(string autor);
         Task<ICollection<LibroInfo>> GetAsync(string? title, PaginationDTO pagination);
-        Task FinalizeAsync(string id);
+        Task<bool> CheckoutAsync(string id); // set Disponible=false
+        Task<bool> CheckinAsync(string id);  // set Disponible=true
     }
 }
