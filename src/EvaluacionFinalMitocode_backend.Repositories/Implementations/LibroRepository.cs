@@ -43,6 +43,7 @@ namespace EvaluacionFinalMitocode_backend.Repositories.Implementations
                     Id = lib.Id,
                     ActiveStatus = lib.ActiveStatus,
                     Titulo = lib.Titulo,
+                    Autor = lib.Autor,
                     ISBN = lib.ISBN,
                     Disponible = lib.Disponible
                 })
