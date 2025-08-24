@@ -16,6 +16,9 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
 {
     private readonly ILibroService service = _service;
     private readonly ILogger<LibrosController> logger = _logger;
+    private const string IdConstraint = @"{id:regex(^LBR\d{{4}}$)}";
+    private const string CheckoutRoute = "checkout/" + IdConstraint;
+    private const string CheckinRoute = "checkin/" + IdConstraint;
 
     [HttpGet("title")]
     [AllowAnonymous]
@@ -23,16 +26,16 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
     {
         logger.LogInformation("Getting books with title filter: {Title}", title);
         var response = await service.SearchAsync(title, pagination);
-        return response.Success ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpGet("{id:string}")]
+    [HttpGet(IdConstraint)]
     [AllowAnonymous]
     public async Task<IActionResult> GetById(string id)
     { 
         logger.LogInformation("Getting book by ID: {Id}", id);
         var response = await service.GetByIdAsync(id);
-        return response.Success ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpPost]
@@ -43,7 +46,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPut("{id:string}")]
+    [HttpPut(IdConstraint)]
     public async Task<IActionResult> Put(string id, [FromForm] LibroRequestDTO request)
     {
         logger.LogInformation("Updating book with ID: {Id}", id);
@@ -51,7 +54,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpDelete("{id:string}")]
+    [HttpDelete(IdConstraint)]
     public async Task<IActionResult> Delete(string id)
     {
         logger.LogInformation("Deleting book with ID: {Id}", id);
@@ -59,7 +62,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPost("checkout/{id:string}")]
+    [HttpPost(CheckoutRoute)]
     public async Task<IActionResult> Checkout(string id)
     {
         logger.LogInformation("Checking out book with ID: {Id}", id);
@@ -67,7 +70,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPost("checkin/{id:string}")]
+    [HttpPost(CheckinRoute)]
     public async Task<IActionResult> Checkin(string id)
     {
         logger.LogInformation("Checking in book with ID: {Id}", id);
