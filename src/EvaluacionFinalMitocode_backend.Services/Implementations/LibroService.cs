@@ -56,10 +56,10 @@ namespace EvaluacionFinalMitocode_backend.Services.Implementations
             {
                 entity = mapper.Map<Libro>(request);
                 // TODO: Necesitamos plementar la logica para almacenar la imagen
-                //if (request.)
-                //{
-                    
-                //}
+                if (request is not null)
+                {
+
+                }
 
             }
             catch (Exception ex)
