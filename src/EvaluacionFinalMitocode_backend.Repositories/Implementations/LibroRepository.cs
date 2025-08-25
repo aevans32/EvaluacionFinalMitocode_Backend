@@ -26,6 +26,20 @@ namespace EvaluacionFinalMitocode_backend.Repositories.Implementations
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Retrieves a paginated collection of books that match the specified title or related criteria.
+        /// </summary>
+        /// <remarks>The method only includes books with an active status. The results are ordered by the
+        /// book title. Pagination headers are added to the HTTP response to indicate the total number of items and
+        /// pages.</remarks>
+        /// <param name="title">The title or partial title to search for. The search also matches books where the author's name starts with
+        /// the specified title or the ISBN exactly matches the specified title. If <see langword="null"/> or empty, all
+        /// active books are included.</param>
+        /// <param name="pagination">The pagination parameters, including the page number and page size, used to control the size and position of
+        /// the result set.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a collection of <see
+        /// cref="LibroInfo"/> objects representing the books that match the search criteria. The collection is empty if
+        /// no books match.</returns>
         public async Task<ICollection<LibroInfo>> GetAsync(string? title, PaginationDTO pagination)
         {
             title ??= string.Empty;
@@ -44,6 +58,11 @@ namespace EvaluacionFinalMitocode_backend.Repositories.Implementations
                     ActiveStatus = lib.ActiveStatus,
                     Titulo = lib.Titulo,
                     Autor = lib.Autor,
+                    Description = lib.Description,
+                    ExtendedDescription = lib.ExtendedDescription,
+                    UnitPrice = lib.UnitPrice,
+                    GenreId = lib.GenreId,
+                    ImageUrl = lib.ImageUrl,
                     ISBN = lib.ISBN,
                     Disponible = lib.Disponible
                 })
