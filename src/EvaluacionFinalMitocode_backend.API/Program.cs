@@ -59,6 +59,8 @@ try
                 Url = new Uri("https://linkedin.com/in/andresevans")
             }
         });
+        var xml = Path.Combine(AppContext.BaseDirectory, "EvaluacionFinalMitocode_backend.API.xml");
+        options.IncludeXmlComments(xml);
     });
 
     // Configurarn Contexto de la BD
