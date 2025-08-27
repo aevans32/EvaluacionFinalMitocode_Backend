@@ -133,10 +133,9 @@ try
     builder.Services.AddAutoMapper(config =>
     {
         config.AddProfile<LibroProfile>();
-        // TODO: Agrega los demas profiles cuando esten implementados
-        //config.AddProfile<GenreProfile>();
-        //config.AddProfile<SaleProfile>();
-        //config.AddProfile<ClienteProfile>();
+        config.AddProfile<AuthProfile>();
+        config.AddProfile<ClienteProfile>();
+        config.AddProfile<PedidoProfile>();
     });
 
     /**
