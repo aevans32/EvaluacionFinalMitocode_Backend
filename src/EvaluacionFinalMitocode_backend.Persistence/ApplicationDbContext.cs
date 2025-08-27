@@ -6,9 +6,6 @@ using System.Reflection;
 
 namespace EvaluacionFinalMitocode_backend.Persistence;
 
-// TODO: Usar esta clase para manejar la autenticacion y autorizacion de usuarios
-//public class ApplicationDbContext : IdentityDbContext<EFUserIdentity>
-// public class ApplicationDbContext : DbContext
 public class ApplicationDbContext : IdentityDbContext<EFUserIdentity>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
