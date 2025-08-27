@@ -7,12 +7,16 @@ using EvaluacionFinalMitocode_backend.Services.Implementations;
 using EvaluacionFinalMitocode_backend.Services.Interfaces;
 using EvaluacionFinalMitocode_backend.Services.Profiles;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,6 +92,38 @@ try
 
     // para la paginacion
     builder.Services.AddHttpContextAccessor();
+
+    // Identity
+    builder.Services.AddIdentity<EFUserIdentity, IdentityRole>(policies =>
+    {
+        policies.Password.RequireDigit = true;
+        policies.Password.RequiredLength = 6;
+        policies.User.RequireUniqueEmail = true;
+    })
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
+
+
+    builder.Services.AddAuthentication(x =>     //primero autenticacion
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(x =>
+    {
+        var key = Encoding.UTF8.GetBytes(builder.Configuration["JWT:JWTKey"] ??
+            throw new InvalidOperationException("JWT key not configured"));
+        x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
+    builder.Services.AddAuthorization(); //luego autorizacion
+
+
 
     // Agregar AutoMapper
     builder.Services.AddAutoMapper(config =>
