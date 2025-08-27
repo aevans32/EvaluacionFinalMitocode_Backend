@@ -1,6 +1,7 @@
 using EvaluacionFinalMitocode_backend.API.Filters;
 using EvaluacionFinalMitocode_backend.Entities.Core;
 using EvaluacionFinalMitocode_backend.Persistence;
+using EvaluacionFinalMitocode_backend.Persistence.Seeders;
 using EvaluacionFinalMitocode_backend.Repositories.Implementations;
 using EvaluacionFinalMitocode_backend.Repositories.Interfaces;
 using EvaluacionFinalMitocode_backend.Services.Implementations;
@@ -90,6 +91,9 @@ try
                                                                   //.AddDbContextCheck<ApplicationDbContext>(); // Esto verifica que la conexion a la BD es correcta y que la aplicacion puede acceder a ella. Como un ping.
         ;
 
+    // Para Seeders
+    builder.Services.AddScoped<UserDataSeeder>();
+
     // para la paginacion
     builder.Services.AddHttpContextAccessor();
 
@@ -143,6 +147,9 @@ try
 
     var app = builder.Build();
 
+    // Apply migrations and seeding data
+    await ApplyMigrationsAndSeedDataAsync(app);
+
     /**
      * Agregar Swagger 
      * solo si la aplicacion se esta ejecutando en modo de desarrollo.
@@ -178,4 +185,18 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush(); // Asegurarse de que todos los logs se escriban antes de cerrar la aplicacion. 
+}
+
+static async Task ApplyMigrationsAndSeedDataAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // Aplica migraciones pendientes (si las hay)
+    if (db.Database.GetPendingMigrations().Any())
+        await db.Database.MigrateAsync();
+
+    // Ejecuta seeders
+    var userSeeder = scope.ServiceProvider.GetRequiredService<UserDataSeeder>();
+    await userSeeder.SeedAsync();
 }
