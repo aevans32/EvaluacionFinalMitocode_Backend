@@ -27,19 +27,19 @@ public class ClienteService : IClienteService
     private readonly IConfiguration config;
 
     public ClienteService(
-        UserManager<EFUserIdentity> userManager,
-        SignInManager<EFUserIdentity> signInManager,
-        IClienteRepository clienteRepository,
-        IMapper mapper,
-        ILogger<ClienteService> logger,
-        IConfiguration config)
+        UserManager<EFUserIdentity> _userManager,
+        SignInManager<EFUserIdentity> _signInManager,
+        IClienteRepository _clienteRepository,
+        IMapper _mapper,
+        ILogger<ClienteService> _logger,
+        IConfiguration _config)
     {
-        userManager = userManager;
-        signInManager = signInManager;
-        clienteRepository = clienteRepository;
-        mapper = mapper;
-        logger = logger;
-        config = config;
+        userManager = _userManager;
+        signInManager = _signInManager;
+        clienteRepository = _clienteRepository;
+        mapper = _mapper;
+        logger = _logger;
+        config = _config;
     }
 
     public async Task<BaseResponseGeneric<IReadOnlyList<LibroAlquiladoResponseDTO>>> GetLibrosAlquiladosPorDniAsync(LibrosPorDniRequestDTO request, CancellationToken ct = default)
@@ -328,7 +328,8 @@ public class ClienteService : IClienteService
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}".Trim())
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}".Trim()),
+                new Claim("dni", user.DocumentNumber ?? string.Empty)
             };
 
         var roles = await userManager.GetRolesAsync(user);

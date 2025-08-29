@@ -79,10 +79,16 @@ try
 
     // Repositories
     builder.Services.AddScoped<ILibroRepository, LibroRepository>();
+    builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 
     // Services
     builder.Services.AddScoped<ILibroService, LibroService>();
+    builder.Services.AddScoped<IClienteService, ClienteService>();
+
     builder.Services.AddScoped<IFileStorage, FileStorageLocal>();
+
+
+
 
     // TODO: Agregar ApplicationDbContext con SQL Server
     // Registering Health Checks
