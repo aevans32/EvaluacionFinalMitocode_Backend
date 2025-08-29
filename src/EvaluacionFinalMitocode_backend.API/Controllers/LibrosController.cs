@@ -1,5 +1,7 @@
 ﻿using EvaluacionFinalMitocode_backend.DTO.Request;
+using EvaluacionFinalMitocode_backend.Entities.Auth;
 using EvaluacionFinalMitocode_backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +17,6 @@ namespace EvaluacionFinalMitocode_backend.API.Controllers;
 /// </remarks>
 [ApiController]
 [Route("api/[controller]")]
-//TODO: Implementar JWT Authentication
 public class LibrosController(ILibroService _service, ILogger<LibrosController> _logger) : ControllerBase
 {
     private readonly ILibroService service = _service;
@@ -76,6 +77,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
     /// <response code="400">Error de validación o datos inválidos.</response>
     [HttpPost]
     [Consumes("multipart/form-data")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleAdmin)]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> Post([FromForm] LibroRequestDTO request)
@@ -97,6 +99,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
     /// <response code="400">Error de validación o datos inválidos.</response>
     [HttpPut(IdConstraint)]
     [Consumes("multipart/form-data")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleAdmin)]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> Put(string id, [FromForm] LibroRequestDTO request)
@@ -114,6 +117,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
     /// <response code="200">Libro eliminado lógicamente.</response>
     /// <response code="400">El libro no existe o no pudo eliminarse.</response>
     [HttpDelete(IdConstraint)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleAdmin)]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> Delete(string id)
@@ -131,6 +135,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
     /// <response code="200">Libro marcado como alquilado.</response>
     /// <response code="400">El libro no existe o ya no está disponible.</response>
     [HttpPost(CheckoutRoute)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleCustomer)]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> Checkout(string id)
@@ -148,6 +153,7 @@ public class LibrosController(ILibroService _service, ILogger<LibrosController> 
     /// <response code="200">Libro marcado como disponible.</response>
     /// <response code="400">El libro no existe o ya estaba disponible.</response>
     [HttpPost(CheckinRoute)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = Constants.RoleCustomer)]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> Checkin(string id)
