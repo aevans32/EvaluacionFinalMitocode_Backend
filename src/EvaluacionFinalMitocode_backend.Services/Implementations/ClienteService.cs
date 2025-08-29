@@ -115,6 +115,7 @@ public class ClienteService : IClienteService
             resp.Data = new RegisterResponseDTO
             {
                 UserId = user.Id,
+                ClienteId = cliente.Id,
                 Token = token.Token,
                 Expiration = token.Expiration
             };
