@@ -41,6 +41,17 @@ try
     builder.Logging.AddSerilog(logger);
     logger.Information($"LOG INITIALIZED in {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "NO ENV"}");
 
+    //CORS
+    var corsConfiguration = "EvaluacionFinalCors";
+    builder.Services.AddCors(setup =>
+    {
+        setup.AddPolicy(corsConfiguration, policy =>
+        {
+            policy.AllowAnyOrigin();
+            policy.AllowAnyHeader().WithExposedHeaders(new string[] {  "TotalRecordsQuantity" });
+            policy.AllowAnyMethod();
+        });
+    });
 
     // Agregar los servicios
     builder.Services.AddControllers(options =>          // Se agregan los controladores con las configuraciones de los filtros encontrados en FiltersExceptions.cs
@@ -167,7 +178,11 @@ try
 
     app.UseHttpsRedirection();
     app.UseStaticFiles(); // para servir archivos estaticos, como imagenes, css, js, etc. en servidor local.
+
+    app.UseAuthentication();
     app.UseAuthorization();
+
+    app.UseCors(corsConfiguration); // CORS
     app.MapControllers();
 
     // Configurar HealthChecks
