@@ -38,6 +38,7 @@ public class ClienteRepository(ApplicationDbContext _context, IHttpContextAccess
                 LibroId = l.Id,
                 Titulo = l.Titulo,
                 ISBN = l.ISBN,
+                ImageUrl = l.ImageUrl,
                 Cantidad = pl.Cantidad,
                 PrecioUnitario = pl.PrecioUnitario
             };

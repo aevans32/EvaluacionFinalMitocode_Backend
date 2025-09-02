@@ -9,6 +9,7 @@ public class LibroAlquiladoResponseDTO
     public string LibroId { get; set; } = default!;
     public string Titulo { get; set; } = default!;
     public string ISBN { get; set; } = default!;
+    public string ImageUrl { get; set; } = default!;
     public int Cantidad { get; set; }
     public decimal PrecioUnitario { get; set; }
     public decimal SubTotal => Cantidad * PrecioUnitario;
